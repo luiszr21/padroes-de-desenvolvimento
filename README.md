@@ -20,14 +20,11 @@ padroes-de-desenvolvimento/
 ├── README.md
 ├── command/
 │   ├── sem-padrao/
-│   │   └── index.ts
-│   └── com-padrao/
-│       └── index.ts
+│   └── com-padrao.ts
+│
 ├── observer/
-│   ├── sem-padrao/
-│   │   └── index.ts
-│   └── com-padrao/
-│       └── index.ts
+│   ├── sem_padrao.ts
+│   └── com_padrao.ts
 ```
 
 
