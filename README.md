@@ -1,159 +1,160 @@
+
 Engenharia de Software II
 Categoria: Comportamental
-## Trabalho – Padrões de Desenvolvimento - Comando / Observador / COLOCA O TEU AQUI
-Integrantes: [ Luís Matheus, Vicente Rochefort e João Vítor Goes ]
+## Trabalho – Padrões de Desenvolvimento - Command / Observer / COLOCA O TEU AQUI
+Integrantes: [Luís Matheus, Vicente Rochefort e João Vítor Goes]
 
 
 ---
 
 ## Objetivo do trabalho
 
-Estudar e demonstrar 3 padrões comportamentais do GoF — ** Command ** , ** Observer ** e ** .... ** — com explicação, exemplos em ** TypeScript ** mostrando * sem padrão * e * com padrão * , análise de pontos fortes/fracos, comparativo entre os padrões.
+Estudar e demonstrar 3 padrões comportamentais do GoF — **Command**, **Observer** e **....** — com explicações, exemplos em **TypeScript** mostrando *sem padrão* e *com padrão*, análise de pontos fortes/fracos, comparativo entre os padrões.
 
 ---
 
-##   Estrutura do
+##  Estrutura do repositório
 
 ```
 padroes-de-desenvolvimento/
 ├── README.md
-├── comando/
-│ ├── sem-padrao/
-│ │ └── index.ts
-│ └── com-padrao/
-│ └── index.ts
-├── observador/
-│ ├── sem-padrao/
-│ │ └── index.ts
-│ └── com-padrao/
-│ └── index.ts
+├── command/
+│   ├── sem-padrao/
+│   │   └── index.ts
+│   └── com-padrao/
+│       └── index.ts
+├── observer/
+│   ├── sem-padrao/
+│   │   └── index.ts
+│   └── com-padrao/
+│       └── index.ts
 ```
 
 
-# 1. COMANDO
+# 1. COMMAND
 
-##   Descrição do Comando Padrão
+##  Descrição do Padrão Command
 
-O padrão * Command * tem como propósito encapsular uma requisição (ação) em um objeto. Dessa forma, comportamentos podem ser parametrizados, armazenados, arquivados, desfeitos ou executados posteriormente, separando quem solicita a ação de quem executa.
+O padrão *Command* tem como propósito encapsular uma requisição (ação) em um objeto. Dessa forma, comportamentos podem ser parametrizados, armazenados, enfileirados, desfeitos ou executados posteriormente, separando quem solicita a ação de quem executa.
 
-Ele é útil em cenários onde há necessidade de criar sistemas com histórico de ações, mecanismos de desfazer/refazer, filas de comandos, macros ou quando se deseja reduzir o fechamento entre a interface e a lógica de execução.
+Ele é útil em cenários onde há necessidade de criar sistemas com histórico de ações, mecanismos de desfazer/refazer, filas de comandos, macros ou quando se deseja reduzir o acoplamento entre a interface e a lógica de execução.
 
 ---
 
 ## Objetivo
 
-- Encapsular conexões em objetos.
-- Desacoplar o emissor (invocador) do receptor (receptor).
-- Permitir armazenar, arquivar, registrar e desfazer comandos.
+- Encapsular solicitações em objetos.
+- Desacoplar o emissor (invoker) do receptor (receiver).
+- Permitir armazenar, enfileirar, registrar e desfazer comandos.
 
 ---
 
 ## Estrutura
 
-1 .  ** Command ** : interface que declara o método ` execute() ` .
-2 .  ** ConcreteCommand ** : implementação concreta da ação.
-3 .  ** Invoker ** : recebe o comando e aciona.
-4 .  ** Receptor ** (opcional): objeto que realiza o trabalho interno.
-5 .  ** Cliente ** : configura tudo e escolhe qual comando usar.
+1. **Command**: interface que declara o método `execute()`.
+2. **ConcreteCommand**: implementação concreta da ação.
+3. **Invoker**: recebe o comando e o aciona.
+4. **Receiver** (opcional): objeto que realiza o trabalho interno.
+5. **Client**: configura tudo e escolhe qual comando utilizar.
 
 ---
 
 # Problema: Código sem o Padrão
 
-A seguir, um exemplo simples onde um controle remoto executa ações de forma direta, através de condicionais. Esse formato dificulta a escalabilidade e aumenta o isolamento:
+A seguir, um exemplo simples onde um controle remoto executa ações de forma direta, através de condicionais. Esse formato dificulta a escalabilidade e aumenta o acoplamento:
 
-``` ts
-//comando/sem-padrao/index.ts​
+```ts
+// command/sem-padrao/index.ts
 
-classe  remoto {
-  Luz() {
-    console . log ( " Luz ligada " );
+class ControleRemoto {
+  ligarLuz() {
+    console.log("Luz ligada");
   }
 
   desligarLuz() {
-    console . log ( " Luz desligada " );
+    console.log("Luz desligada");
   }
 }
 
-const controle =  new  ControleRemoto ();
-controle . ligarLuz ();
-controle . desligarLuz ();
+const controle = new ControleRemoto();
+controle.ligarLuz();
+controle.desligarLuz();
 ```
 
-Nesse modelo, adicionar novas ações exige modificação direta do ControleRemoto, tornando o código rígido e pouco extensível.
+Nesse modelo, adicionar novas ações exige modificar diretamente o ControleRemoto, tornando o código rígido e pouco extensível.
 
 
-# Solução com o Comando Padrão
+# Solução com o Padrão Command
 
-** Comando de Interface **
-``` ts
-interface  Command {
-  execute() :  void ;
+**Interface Command**
+```ts
+interface Command {
+  execute(): void;
 }
 
 // Comandos Concretos
-classe  LigarLuz  implementa  Command {
-  executar() {
-    console . log ( “ Lâmpada ligada ” );
+class LigarLuz implements Command {
+  execute() {
+    console.log("Lâmpada ligada");
   }
 }
 
-classe  ‡rLuz  implementa  Command {
-  executar() {
-    console . log ( " Lâmpada desligada " );
+class DesligarLuz implements Command {
+  execute() {
+    console.log("Lâmpada desligada");
   }
 }
- // Invocador
-  Invocador ( Controle  Remoto )
-classe  remoto {
-  executar( comando :  Comando ) {
-    comando . execute ();
+ // Invoker
+  Invocador (Controle Remoto)
+class ControleRemoto {
+  executar(comando: Command) {
+    comando.execute();
   }
 }
 
- // Uso do x
-const controle =  new  ControleRemoto ();
+ // Uso do Padrão
+const controle = new ControleRemoto();
 
-controle . executar ( nova  LigarLuz ());
-controle . executar ( new  DesligarLuz ());
+controle.executar(new LigarLuz());
+controle.executar(new DesligarLuz());
 ```
 
 
 
-#Estrutura do Padrão (visão geral)
+# Estrutura do Padrão (visão geral)
 
-* Comando: * Interface que define a operação a ser realizada.
+*Command:* Interface que define a operação a ser executada.
 
-* ConcreteCommand: * Implementações específicas das ações.
+*ConcreteCommand:* Implementações específicas das ações.
 
-* Invoker: * Objeto que solicita a execução de comandos.
+*Invoker:* Objeto que solicita a execução dos comandos.
 
-* Receptor (opcional): * Objeto que realiza o trabalho real.
+*Receiver (opcional):* Objeto que realiza o trabalho real.
 
-* Cliente: * Configure e associe comandos ao invocador.
+*Client:* Configura e associa comandos ao invocador.
 
 # Pontos Fortes
 
- - Reduza a proteção entre quem solicita e quem executa a ação.
+ - Reduz o acoplamento entre quem solicita e quem executa a ação.
 
  - Facilita a adição de novos comandos sem alterar o código existente.
 
  - Permite armazenar comandos em listas, filas ou pilhas.
 
- - Possibilidade de implementar funcionalidades como desfazer/refazer.
+ - Possibilita a implementação de funcionalidades como desfazer/refazer.
 
  - Organização clara do código, facilitando manutenção e testes.
 
 # Pontos Fracos
 
- - Pode gerar um grande número de classes em sistemas complexos.
+ - Pode gerar grande número de classes em sistemas complexos.
 
  - Para comandos muito simples, pode parecer código excessivo.
 
- - Estrutura elaborada mais complexa quando comparada a chamadas diretas.
+ - Estrutura ligeiramente mais complexa quando comparada a chamadas diretas.
 
 # Conclusão
 
-O padrão ** Command ** oferece uma forma robusta e organizada de ações encapsuladas, tornando sistemas mais flexíveis, extensíveis e de baixa segurança. Sua aplicação é especialmente útil em contextos que exigem histórico de operações, automação de tarefas, controles remotos, linhas de execução e ações configuráveis.
+O padrão **Command** oferece uma forma robusta e organizada de encapsular ações, tornando sistemas mais flexíveis, extensíveis e de baixo acoplamento. Sua aplicação é especialmente útil em contextos que requerem histórico de operações, automação de tarefas, controles remotos, filas de execução e ações configuráveis.
 
-Este estudo demonstrou a diferença entre uma melhoria direta e uma estrutura baseada no padrão, evidenciando ganhos consideráveis ​​na modularidade e manutenção.
+Este estudo demonstrou a diferença entre uma implementação direta e uma estrutura baseada no padrão, evidenciando ganhos consideráveis na modularidade e manutenção.
