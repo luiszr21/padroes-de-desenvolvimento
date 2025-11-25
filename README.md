@@ -1,8 +1,8 @@
 
 Engenharia de Software II
 Categoria: Comportamental
-## Trabalho – Padrões de Desenvolvimento - Command / Observer
-Integrantes: [Luís Matheus e Vicente Rochefort]
+## Trabalho – Padrões de Desenvolvimento - Command / Observer / Template Method
+Integrantes: [Luís Matheus, Vicente Rochefort e João Vítor Goes]
 
 
 
@@ -16,6 +16,9 @@ padroes-de-desenvolvimento/
 │   └── com-padrao.ts
 │
 ├── observer/
+│   ├── sem_padrao.ts
+│   └── com_padrao.ts
+├── template_method/
 │   ├── sem_padrao.ts
 │   └── com_padrao.ts
 ```
@@ -226,3 +229,151 @@ new Termometro().setTemperatura(30);
 ## 🏁 Conclusão
 O padrão **Observer** é ideal para cenários onde várias partes do sistema precisam reagir a uma mesma mudança sem dependência direta.  
 Simples, escalável e amplamente usado em interfaces gráficas, eventos, jogos e sistemas reativos.
+
+# 3. Padrão de Projeto: Template Method
+# 📘 Descrição do Padrão Template Method
+
+O padrão Template Method define o esqueleto de um algoritmo em uma classe base, permitindo que subclasses implementem apenas partes específicas do processo.
+Assim, a estrutura geral permanece igual, mas detalhes podem mudar conforme a necessidade.
+
+É usado quando vários algoritmos compartilham passos em comum, mas diferem em algumas etapas específicas.
+
+# 🎯 Objetivo
+
+Definir o fluxo geral de um algoritmo em uma classe abstrata.
+
+Permitir que subclasses implementem etapas específicas.
+
+Evitar duplicação de código.
+
+Garantir uma ordem fixa de execução.
+
+# 🏗 Estrutura Geral
+
+Classe Abstrata (Template) → contém o método template() que define a ordem do algoritmo.
+
+Métodos abstratos → devem ser implementados pelas subclasses.
+
+Métodos concretos → partes comuns do algoritmo.
+
+Subclasses → personalizam apenas o que muda.
+
+❌ Problema (Sem o Padrão Template Method)
+
+Cada tipo de pedido possui sua própria lógica duplicada, deixando o sistema:
+
+Rígido
+
+Cheio de repetição de código
+
+Difícil de manter caso algo comum mude
+
+# 🔹 Código sem o padrão:
+```
+class ProcessarPedidoOnline {
+  processar() {
+    console.log("Validando pagamento do pedido online...");
+    console.log("Separando itens no estoque...");
+    console.log("Enviando pedido pelos Correios...");
+    console.log("Pedido online finalizado!");
+  }
+}
+
+class ProcessarPedidoPresencial {
+  processar() {
+    console.log("Registrando pagamento no caixa...");
+    console.log("Entregando produto ao cliente...");
+    console.log("Pedido presencial finalizado!");
+  }
+}
+const pedidoOnline = new ProcessarPedidoOnline();
+pedidoOnline.processar();
+
+const pedidoPresencial = new ProcessarPedidoPresencial();
+pedidoPresencial.processar();
+```
+
+➡ Aqui, cada classe tem seu próprio fluxo completo: muita duplicação.
+
+# ✅ Solução Usando o Padrão Template Method
+
+Criamos uma classe abstrata com o método processar(), que define:
+
+Validar pagamento
+
+Entregar pedido
+
+Finalizar (passo comum)
+
+As subclasses implementam só o que muda.
+
+# 🔹 Código com o padrão:
+```
+// Classe abstrata que define o esqueleto do algoritmo
+abstract class ProcessarPedidoTemplate {
+  processar() {
+    this.validarPagamento();
+    this.entregarPedido();
+    this.finalizar();
+  }
+
+  abstract validarPagamento(): void;
+  abstract entregarPedido(): void;
+
+  private finalizar() {
+    console.log("Pedido finalizado!\n");
+  }
+}
+
+// Pedido Online
+class ProcessarPedidoOnline extends ProcessarPedidoTemplate {
+  validarPagamento() {
+    console.log("Validando pagamento do pedido online...");
+  }
+
+  entregarPedido() {
+    console.log("Enviando pedido pelos Correios...");
+  }
+}
+
+// Pedido Presencial
+class ProcessarPedidoPresencial extends ProcessarPedidoTemplate {
+  validarPagamento() {
+    console.log("Registrando pagamento no caixa...");
+  }
+
+  entregarPedido() {
+    console.log("Entregando produto ao cliente...");
+  }
+}
+
+const online = new ProcessarPedidoOnline();
+online.processar();
+
+const presencial = new ProcessarPedidoPresencial();
+presencial.processar();
+
+```
+
+# ⭐ Pontos Fortes
+
+Evita repetição de código.
+
+Mantém o processo organizado e padronizado.
+
+Permite variar partes do algoritmo sem alterar sua estrutura.
+
+Aumenta a extensibilidade.
+
+# ⚠ Pontos Fracos
+
+Pode gerar dependência forte entre subclasses e a classe abstrata.
+
+Mudanças na estrutura exigem alterar a classe base.
+
+Subclasses podem ter pouca liberdade dependendo do template.
+
+# 🏁 Conclusão
+
+O padrão Template Method é ideal para algoritmos que possuem a mesma estrutura, mas precisam de variação em etapas específicas.
+Ele melhora organização, evita duplicações e permite evolução mais fácil do sistema, tornando o código mais limpo, modular e escalável.
